@@ -22,13 +22,23 @@ for (i in 1:length(tsvFiles)) {
 head(x)
 write.csv(x, file = "combined_tsvs.csv", row.names=FALSE)
 
+
+#### SIZE BINNING DEMONSTRATION:
 x$timestamp<-as.POSIXct(x$timestamp)
 x$hour<-as.POSIXlt(x$timestamp)$hour # add column of hour
 x$yday<-as.POSIXlt(x$timestamp)$yday + 1 # add day of year
 # x$hourday<-paste(x$yday, x$hour, sep = "_") # this we can use for casting data from 2019-2020 (for 2018 we will need to do more subsetting because of the different data collection)
 
 
-breaks<-seq(min(log10(x$area)), max(log10(x$area)), length.out=15) # set breaks for binning. Here, we can define a min and max value and number of breaks that is consistent across folders (rather than as here, where we are defining our cut points based on the range of data in this folder). This would be useful if working with one giant tsv file proves to be too complicated.
+breaks<-seq(-5, -1.5, length.out=20) # set breaks for binning. Here, we can define a min and max value and number of breaks that is consistent across folders (rather than as here, where we are defining our cut points based on the range of data in this folder). This would be useful if working with one giant tsv file proves to be too complicated. These values are outside the range of the current folder that I am working in
+
+midpoints<-function(x) { #Define a function to calculate the midpoint of equally-spaced breaks
+  y<-NA
+  for (i in 1:(length(x)-1)) {
+    y[i]<-(x[i] + x[i+1])/2
+  }
+  return(y)
+}
 
 x$area_bin<-cut(log10(x$area), breaks = breaks) 
 
